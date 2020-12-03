@@ -11,10 +11,16 @@ Gui, Add, Text, x10 y30 w70 h20, Grinding:
 Gui, Add, Text, x80 y30 w80 h20, Alt+G
 
 Gui, Add, Text, x10 y50 w70 h20, Cobblestone:
-Gui, Add, Text, x80 y50 w80 h20, Alt+C
+Gui, Add, Text, x80 y50 w80 h20, Alt+M
 
-Gui, Add, Text, x10 y70 w70 h20, Current:
-Gui, Add, Text, x80 y70 w80 h20 vCurrentAction, None
+Gui, Add, Text, x10 y70 w70 h20, Concrete:
+Gui, Add, Text, x80 y70 w80 h20, Alt+C
+
+Gui, Add, Text, x10 y90 w70 h20, Take off:
+Gui, Add, Text, x80 y90 w80 h20, Alt+Space
+
+Gui, Add, Text, x10 y110 w70 h20, Current:
+Gui, Add, Text, x80 y110 w80 h20 vCurrentAction, None
 
 Gui, Add, Text, x140 y10 w80 h20, Set window:
 Gui, Add, Text, x220 y10 w90 h20, Alt+W
@@ -97,15 +103,48 @@ Return
 Return
 
 ; Cobblestone generator
-!C::
+!M::
 	GuiControl, , CurrentAction, Cobblestone
 	Suspend, On
 	isDoingSomething:=true
 	ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
 	while (stopCurrent=false){
-		Sleep, 500
+		Sleep, 100
 	}
 	ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
 	stopCurrent:=false
 	Suspend, Off
 Return
+
+; Concrete
+; I don't intend to use this, I just want to do everything XAHK does and more
+!C::
+	GuiControl, , CurrentAction, Concrete
+	Suspend, On
+	isDoingSomething:=True
+	ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
+	Sleep, 50
+	ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
+	while (stopCurrent=False){
+		sleep, 100
+	}
+	ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
+	Sleep, 50
+	ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
+	stopCurrent:=False
+	Suspend, Off
+Return
+
+#If WinActive("ahk_pid " . WindowPID)
+	!Space::
+		Suspend, Permit
+		; Why exactly I need to do it like this is anyone's guess
+		Send {Space Down}
+		Send {Space Up}
+		Sleep 200
+		Send {Space Down}
+		Send {Space Up}
+		Sleep 200
+		Click, Right
+	Return
+#If
