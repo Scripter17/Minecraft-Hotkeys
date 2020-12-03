@@ -47,8 +47,11 @@ return
 #If WinActive("ahk_pid " . WindowPID) || !WinExist("ahk_pid" . WindowPID)
 	!S::
 		Suspend, Permit
-		stopCurrent:=True
-		GuiControl, , CurrentAction, None
+		if (isDoingSomething=true){
+			stopCurrent:=True
+			GuiControl, , CurrentAction, None
+			isDoingSomething:=false
+		}
 	Return
 #If
 
@@ -57,6 +60,7 @@ return
 	GuiControl, , CurrentAction, Fishing
 	; Disable the other hotkeys
 	Suspend, On
+	isDoingSomething:=true
 	while (stopCurrent=false){
 		ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
 		Sleep, 100
@@ -72,6 +76,7 @@ Return
 !G::
 	GuiControl, , CurrentAction, Grinding
 	Suspend, On
+	isDoingSomething:=true
 	GMainLoop:
 	while (stopCurrent=false){
 		ControlClick, , ahk_pid %WindowPID%, , Left, , NA
@@ -95,6 +100,7 @@ Return
 !C::
 	GuiControl, , CurrentAction, Cobblestone
 	Suspend, On
+	isDoingSomething:=true
 	ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
 	while (stopCurrent=false){
 		Sleep, 500
