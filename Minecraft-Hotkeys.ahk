@@ -2,8 +2,9 @@
 ; Minecraft-Hotkeys by Scripter17
 ; Version 0.3.1
 ; Original concept stolen from https://github.com/monpjc/XAHK
-version=v0.3.1
+version=v0.4
 ; Initialize the GUI
+; The 4 AFK hotkeys
 Gui, Add, Text, x10 y10 w70 h20, Fishing:
 Gui, Add, Text, x80 y10 w80 h20, Alt+F
 Gui, Add, Text, x10 y30 w70 h20, Grinding:
@@ -12,17 +13,25 @@ Gui, Add, Text, x10 y50 w70 h20, Cobblestone:
 Gui, Add, Text, x80 y50 w80 h20, Alt+M
 Gui, Add, Text, x10 y70 w70 h20, Concrete:
 Gui, Add, Text, x80 y70 w80 h20, Alt+C
+; Jump flying with an elytra and rocket
 Gui, Add, Text, x10 y90 w70 h20, Take off:
 Gui, Add, Text, x80 y90 w80 h20, Alt+Space
-Gui, Add, Text, x10 y110 w70 h20, Current:
-Gui, Add, Text, x80 y110 w80 h20 vCurrentAction, None
-Gui, Add, Text, x150 y10 w90 h20, Set window:
-Gui, Add, Text, x240 y10 w90 h20, Alt+W
-Gui, Add, Text, x150 y30 w90 h20, Current Window:
-Gui, Add, Text, x240 y30 w90 h60 vCurrentWindow, None
+; Holding MButton and L/RButton spamclicks L/Rbutton
+Gui, Add, Checkbox, vMiddleSpam x10 y110 w10 h20
+Gui, Add, Text, x80 y110 w160 h20, Hold middle mouse to autoclick
+Gui, Add, Slider, ToolTip Line5 vSpamInterval x20 y110 w60 h20 Range10-250
+; Current action (only applies to the first 4)
+Gui, Add, Text, x10 y130 w70 h20, Current:
+Gui, Add, Text, x80 y130 w80 h20 vCurrentAction, None
+; Current window data
+Gui, Add, Text, x130 y10 w90 h20, Set window:
+Gui, Add, Text, x220 y10 w90 h20, Alt+W
+Gui, Add, Text, x130 y30 w90 h20, Current Window:
+Gui, Add, Text, x220 y30 w90 h60 vCurrentWindow, None
+; Credits
 Gui, Add, Link, x240 y110 w70 h20, <a href="https://github.com/Scripter17/Minecraft-Hotkeys">Scripter17</a>
 Gui, Add, Text, x240 y130 w70 h20, Version %version%
-Gui, Add, Text, x240 y150 w70 h20, 2020-12-03
+Gui, Add, Text, x240 y150 w70 h20, 2020-12-04
 ; Generated using SmartGUI Creator 4.0
 ; https://autohotkey.com/board/topic/738-smartgui-creator
 Gui, Show, h180 w320, Minecraft hotkeys %version%
@@ -140,5 +149,26 @@ Return
 		Send {Space up}
 		Sleep 50
 		Click, Right
+	Return
+
+	MButton & LButton::
+		Suspend, Permit
+		guicontrolget, MiddleSpam
+		if (MiddleSpam=1){
+			while (getKeyState("MButton", "P") && getKeyState("LButton", "P")){
+				Click
+				Sleep % SpamInterval
+			}
+		}
+	Return
+	MButton & RButton::
+		Suspend, Permit
+		guicontrolget, MiddleSpam
+		if (MiddleSpam=1){
+			while (getKeyState("MButton", "P") && getKeyState("RButton", "P")){
+				Click, Right
+				Sleep % SpamInterval
+			}
+		}
 	Return
 #If

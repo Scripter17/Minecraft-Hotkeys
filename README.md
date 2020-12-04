@@ -14,5 +14,6 @@ When you open the script, a GUI should appear with instructions on how to use it
 - AFK Cobblestone generator
 - Quick concrete
 - Quick takeoff
+- Autoclick eithe the left or right mouse buttons
 
 The ones listed as AFK work even after alt-tabbing out of Minecraft, assuming you used F3+P to disable pausing on lost focus
