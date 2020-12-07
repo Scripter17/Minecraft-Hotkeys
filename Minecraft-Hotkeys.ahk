@@ -180,7 +180,7 @@ Return
 	Return
 #If
 
-; Just trust me on this
 !+^#esc::
+	; Just trust me on this
 	ExitApp
 return
