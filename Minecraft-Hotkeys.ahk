@@ -6,6 +6,7 @@ version:="v0.4.1"
 ; Initialize the GUI
 ; The 4 AFK hotkeys
 ; TODO: Maybe a for loop?
+; TODO: Contribute to AHK V2's source code to ensure for loops don't suck nearly as much ass in the future
 Gui, Add, Link,   x10  y10 w110 h20, AFK <a href="https://www.youtube.com/watch?v=-wKW0OovGK4">Fishing</a>:
 Gui, Add, Text,   x120 y10 w30  h20, Alt+F
 Gui, Add, Slider, x150 y10 w60  h20 ToolTip Range100-1000 TickInterval225 vFishingInterval
@@ -45,17 +46,18 @@ GuiClose:
 ExitApp
 
 stopCurrent:=False
+isDoigngSomething:=False
 
 ; Set the window
 ; This is disabled while a hotkey is running to ensure the user doesn't accidentally change it when doing other stuff
 !W::
 	WinGet, WindowPID, PID, A
-	WinGetTitle, WindowName, A
-	GuiControl, , CurrentWindow, %WindowName% (%WindowPID%)
+	WinGetTitle, WindowName, A ; Why isn't this a part of WinGet?
+	GuiControl, , CurrentWindow, %WindowName% (%WindowPID%) ; Set the text of the "Current Window" line
 Return
 
 ; Stop the currently active hotkey
-; This only works while the currently selected window is active
+; This only works while the currently selected window is active or if it doesn't exsist anymore
 #If WinActive("ahk_pid " . WindowPID) || !WinExist("ahk_pid" . WindowPID)
 	!S::
 		Suspend, Permit
@@ -67,81 +69,81 @@ Return
 	Return
 #If
 
-; Fishing
-!F::
-	GuiControl, , CurrentAction, Fishing
-	guicontrolget, FishingInterval
-	Suspend, On
-	isDoingSomething:=True
-	while (stopCurrent=False){
-		ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
-		Sleep, 100
-		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
-		Sleep, %FishingInterval%
-	}
-	stopCurrent:=False
-	; Re-enable the other hotkeys
-	Suspend, Off
-Return
-
-; Mob grinding
-!G::
-	GuiControl, , CurrentAction, Grinding
-	Suspend, On
-	isDoingSomething:=True
-	GMainLoop:
-	while (stopCurrent=False){
-		ControlClick, , ahk_pid %WindowPID%, , Left, , NA
-		Sleep, 50
-		; Fun fact: It took like 20 minutes to figure out that I forgot the second comma before the NAD/NAU
-		ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
-		Loop 10 {
-			Sleep, 162
-			if (stopCurrent=True){
-				break, GMainLoop
-			}
-		}
-		Sleep, 50
-	}
-	ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
-	stopCurrent:=False
-	Suspend, Off
-Return
-
-; Cobblestone generator
-!M::
-	GuiControl, , CurrentAction, Cobblestone
-	Suspend, On
-	isDoingSomething:=True
-	ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
-	while (stopCurrent=False){
-		Sleep, 100
-	}
-	ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
-	stopCurrent:=False
-	Suspend, Off
-Return
-
-; Concrete
-; I don't intend to use this, I just want to do everything XAHK does and more
-!C::
-	GuiControl, , CurrentAction, Concrete
-	Suspend, On
-	isDoingSomething:=True
-	ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
-	Sleep, 50
-	ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
-	while (stopCurrent=False){
-		Sleep, 100
-	}
-	ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
-	Sleep, 50
-	ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
-	stopCurrent:=False
-	Suspend, Off
-Return
-
 #If WinActive("ahk_pid " . WindowPID)
+	; Fishing
+	!F::
+		GuiControl, , CurrentAction, Fishing
+		GuiControlGet, FishingInterval
+		Suspend, On ; Disable any hotkey that isn't marke with "Suspend, Permit"
+		isDoingSomething:=True
+		while (stopCurrent<>True){ ; TODO: Figure out why =False doesn't work but <>True does
+			ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
+			Sleep, 100
+			ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
+			Sleep, %FishingInterval%
+		}
+		stopCurrent:=False
+		Suspend, Off ; Re-enable the suspended hotkeys
+	Return
+
+	; Mob grinding
+	!G::
+		GuiControl, , CurrentAction, Grinding
+		Suspend, On
+		isDoingSomething:=True
+		GMainLoop:
+		while (stopCurrent<>True){
+			ControlClick, , ahk_pid %WindowPID%, , Left, , NA
+			Sleep, 50
+			; Fun fact: It took like 20 minutes to figure out that I forgot the second comma before the NAD/NAU
+			ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
+			Loop 10 {
+				Sleep, 162
+				if (stopCurrent=True){
+					 ; This is the jankest solution I've ever written, but it lets you stop the key mid-eating
+					break, GMainLoop
+				}
+			}
+			Sleep, 50
+		}
+		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
+		stopCurrent:=False
+		Suspend, Off
+	Return
+
+	; Cobblestone generator
+	!M::
+		GuiControl, , CurrentAction, Cobblestone
+		Suspend, On
+		isDoingSomething:=True
+		ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
+		while (stopCurrent<>True){
+			Sleep, 100
+		}
+		ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
+		stopCurrent:=False
+		Suspend, Off
+	Return
+
+	; Concrete
+	; I don't intend to use this, I just want to do everything XAHK does and more
+	!C::
+		GuiControl, , CurrentAction, Concrete
+		Suspend, On
+		isDoingSomething:=True
+		ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
+		Sleep, 50
+		ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
+		while (stopCurrent<>True){
+			Sleep, 100
+		}
+		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
+		Sleep, 50
+		ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
+		stopCurrent:=False
+		Suspend, Off
+	Return
+
 	!Space::
 		Suspend, Permit
 		; Why exactly I need to do it like this is anyone's guess
