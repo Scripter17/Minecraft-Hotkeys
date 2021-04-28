@@ -3,6 +3,7 @@
 ; Original concept stolen from https://github.com/monpjc/XAHK
 #SingleInstance, force
 version:="v0.4.1"
+date:="2020-12-10"
 ; Initialize the GUI
 ; The 4 AFK hotkeys
 ; TODO: Maybe a for loop?
@@ -14,18 +15,24 @@ Gui, Add, Slider, x150 y10 w60  h20 ToolTip Range100-1000 TickInterval225 vFishi
 Gui, Add, Text, x10  y30 w110 h20, AFK Mob Grinding:
 Gui, Add, Text, x120 y30 w30  h20, Alt+G
 
-Gui, Add, Text, x10  y50 w110 h20, AFK Cobblestone:
-Gui, Add, Text, x120 y50 w30  h20, Alt+M
+Gui, Add, Text, x10 y50, Hotbar slots do multi-mending with
+For slot in [1,2,3,4,5,6,7,8,9]
+	Gui, Add, Checkbox, % "vSwapSlot" . slot . " x" . (slot*30-20) . " y70", % slot
 
-Gui, Add, Text, x10  y70 w110 h20, Quick concrete:
-Gui, Add, Text, x120 y70 w30  h20, Alt+C
+Gui, Add, Text, x10  y90 w110 h20, AFK Cobblestone:
+Gui, Add, Text, x120 y90 w30  h20, Alt+M
+
+Gui, Add, Text, x10  y110 w110 h20, Quick concrete:
+Gui, Add, Text, x120 y110 w30  h20, Alt+C
 
 ; Jump flying with an elytra and rocket
-Gui, Add, Text, x10  y90 w110 h20, Elytra take off:
-Gui, Add, Text, x120 y90 w80  h20, Alt+Space
+Gui, Add, Text, x10  y130 w110 h20, Elytra take off:
+Gui, Add, Text, x120 y130 w80  h20, Alt+Space
 ; Holding MButton and L/RButton spamclicks L/Rbutton
-Gui, Add, Checkbox, x10  y110 w110 h20 vMiddleSpam, Autoclick (M+L/R)
-Gui, Add, Slider,   x120 y110 w60  h20 vSpamInterval Range100-1000 TickInterval225 ToolTip 
+Gui, Add, Checkbox, x10  y150 w110 h20 vMiddleSpam, Autoclick
+Gui, Add, Text,     x120 y150 w100 h20, Middle+L/R mouse
+Gui, Add, Slider,   x220 y150 w60  h20 vSpamInterval Range100-1000 TickInterval225 ToolTip
+;Gui, Add, Text,     x280 y150, ms
 ; Current action (only applies to the first 4)
 Gui, Add, Text, x10  y200 w90 h20, Current action:
 Gui, Add, Text, x100 y200 w90 h20 vCurrentAction, None
@@ -37,7 +44,7 @@ Gui, Add, Text, x100 y240 w100 h30 vCurrentWindow, None
 ; Credits
 Gui, Add, Link, x240 y200 w70 h20, <a href="https://github.com/Scripter17/Minecraft-Hotkeys">Scripter17</a>
 Gui, Add, Text, x240 y220 w70 h20, Version %version%
-Gui, Add, Text, x240 y240 w70 h20, 2020-12-05
+Gui, Add, Text, x240 y240 w70 h20, %date%
 ; Generated using SmartGUI Creator 4.0
 ; https://autohotkey.com/board/topic/738-smartgui-creator
 Gui, Show, h270 w320, Minecraft hotkeys %version%
@@ -116,8 +123,8 @@ Return
 		GuiControl, , CurrentAction, Cobblestone
 		Suspend, On
 		isDoingSomething:=True
-		ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
 		while (stopCurrent<>True){
+			ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
 			Sleep, 100
 		}
 		ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
@@ -135,15 +142,16 @@ Return
 		Sleep, 50
 		ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
 		while (stopCurrent<>True){
-			Sleep, 100
+			Sleep, 50
 		}
-		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
-		Sleep, 50
 		ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
+		Sleep, 50
+		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
 		stopCurrent:=False
 		Suspend, Off
 	Return
 
+	; Elytra take off
 	!Space::
 		Suspend, Permit
 		; Why exactly I need to do it like this is anyone's guess
@@ -158,21 +166,22 @@ Return
 		Click, Right
 	Return
 
-	MButton & LButton::
+	; Autoclicking
+	~MButton & LButton::
 		Suspend, Permit
 		guicontrolget, MiddleSpam
 		if (MiddleSpam=1){
-			while (getKeyState("MButton", "P") && getKeyState("LButton", "P")){
+			while (getKeyState("LButton", "P")){
 				Click
 				Sleep % SpamInterval
 			}
 		}
 	Return
-	MButton & RButton::
+	~MButton & RButton::
 		Suspend, Permit
 		guicontrolget, MiddleSpam
 		if (MiddleSpam=1){
-			while (getKeyState("MButton", "P") && getKeyState("RButton", "P")){
+			while (getKeyState("RButton", "P")){
 				Click, Right
 				Sleep % SpamInterval
 			}

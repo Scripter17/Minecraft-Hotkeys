@@ -1,11 +1,13 @@
 # Minecraft-Hotkeys
  
-A basic AutoHotKey script for automating fishing and mob/XP grinding in Minecraft  
-Original concept stolen from [monpjc/XAHK](https://github.com/monpjc/XAHK)
+A basic [AutoHotKey](https://www.autohotkey.com/) script for automating fishing and mob/XP grinding in Minecraft  
+Original concept (and a few button timings) stolen from [monpjc/XAHK](https://github.com/monpjc/XAHK)
 
 ## Instructions
 
-When you open the script, a GUI should appear with instructions on how to use it
+When you open the script, the following GUI should appear
+
+![Whoops, something went wrong with loading the image](GUI.png)
 
 ## Features
 
@@ -14,6 +16,6 @@ When you open the script, a GUI should appear with instructions on how to use it
 - AFK Cobblestone generator
 - Quick concrete
 - Quick takeoff
-- Autoclick eithe the left or right mouse buttons
+- Autoclick either the left or right mouse buttons
 
-The ones listed as AFK work even after alt-tabbing out of Minecraft, assuming you used F3+P to disable pausing on lost focus
+The ones listed as AFK work even after alt-tabbing out of Minecraft, assuming you used F3+P to disable automatic pausing when the game loses focus
