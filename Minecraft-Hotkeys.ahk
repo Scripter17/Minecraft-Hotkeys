@@ -40,19 +40,19 @@ Gui, Add, Text,     x120 y170 w100 h20, Middle+L/R mouse
 Gui, Add, Slider,   x220 y170 w60  h20 vSpamInterval Range100-1000 TickInterval225 ToolTip
 ;Gui, Add, Text,     x280 y150, ms
 ; Current action (only applies to the first 4)
-Gui, Add, Text, x10  y200 w90 h20, Current action:
-Gui, Add, Text, x100 y200 w90 h20 vCurrentAction, None
-Gui, Add, Text, x10  y220 w90  h20, Stop action:
-Gui, Add, Text, x100 y220 w90  h20, Alt+S
+Gui, Add, Text, x10  y200 w90 h20, Stop action:
+Gui, Add, Text, x100 y200 w90 h20, Alt+S
+Gui, Add, Text, x10  y220 w90 h20, Current action:
+Gui, Add, Text, x100 y220 w90 h20 vCurrentAction, None
 ; Current window data
-Gui, Add, Text, x10  y240 w90  h20, Current Window:
-Gui, Add, Text, x100 y240 w100 h30 vCurrentWindow, None
-Gui, Add, Text, x10  y260 w90  h20, Set window:
-Gui, Add, Text, x100 y260 w90  h20, Alt+W
+Gui, Add, Text, x10  y240 w90  h20, Set window:
+Gui, Add, Text, x100 y240 w90  h20, Alt+W
+Gui, Add, Text, x10  y260 w90  h20, Current Window:
+Gui, Add, Text, x100 y260 w200 h30 vCurrentWindow, None
 ; Credits
 Gui, Add, Link, x240 y200 w70 h20, <a href="https://github.com/Scripter17/Minecraft-Hotkeys">Scripter17</a>
-Gui, Add, Text, x240 y220 w70    , Version %version%
-Gui, Add, Text, x240 y260 w70 h20, %date%
+Gui, Add, Text, x240 y220 w70    , %version%
+Gui, Add, Text, x240 y240 w70 h20, %date%
 ; Generated using SmartGUI Creator 4.0
 ; https://autohotkey.com/board/topic/738-smartgui-creator
 Gui, Show, h290 w320, Minecraft hotkeys %version%
