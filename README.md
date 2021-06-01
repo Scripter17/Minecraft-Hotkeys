@@ -15,7 +15,7 @@ The instructions should be fairly understandable from there
 
 - AFK fishing
 - AFK mob grinding
- - Lets you repair multiple mending items by setting slots to swap into your offhand
+  - Lets you repair multiple mending items by setting slots to swap into your offhand
 - AFK cobblestone generator mining
 - Quick concrete hardening
 - Easy elytra takeoff
