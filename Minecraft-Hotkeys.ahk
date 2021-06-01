@@ -1,9 +1,9 @@
-; Minecraft-Hotkeys by Scripter17
+; Minecraft-Hotkeys by Github@Scripter17
 ; Version 0.4.1
 ; Original concept stolen from https://github.com/monpjc/XAHK
 #SingleInstance, force
-version:="v0.4.1"
-date:="2020-12-10"
+version:="v0.5.0-pre"
+date:="2021-06-01"
 ; Initialize the GUI
 ; The 4 AFK hotkeys
 ; TODO: Maybe a for loop?
@@ -15,23 +15,29 @@ Gui, Add, Slider, x150 y10 w60  h20 ToolTip Range100-1000 TickInterval225 vFishi
 Gui, Add, Text, x10  y30 w110 h20, AFK Mob Grinding:
 Gui, Add, Text, x120 y30 w30  h20, Alt+G
 
-Gui, Add, Text, x10 y50, Hotbar slots do multi-mending with
+Gui, Add, Checkbox, x10 y50 vDoSwapping gSwapToggle, Swap?
 For slot in [1,2,3,4,5,6,7,8,9]
-	Gui, Add, Checkbox, % "vSwapSlot" . slot . " x" . (slot*30-20) . " y70", % slot
+	Gui, Add, Text, % "x" . (slot*25+43) .  " y50", % slot
+Gui, Add, Text, x10 y70, Slots
+For slot in [1,2,3,4,5,6,7,8,9]
+	Gui, Add, Checkbox, % "vSwapSlot" . slot . " x" . (slot*25+40) . " y70 disabled", % chr(8203)
+Gui, Add, Text, x10 y90, Weapon
+For slot in [1,2,3,4,5,6,7,8,9]
+	Gui, Add, Radio, % "vWeaponSlot" . slot . " x" . (slot*25+40) . " y90 gSetWeapon disabled", % chr(8203)
 
-Gui, Add, Text, x10  y90 w110 h20, AFK Cobblestone:
-Gui, Add, Text, x120 y90 w30  h20, Alt+M
+Gui, Add, Text, x10  y110 w110 h20, AFK Cobblestone:
+Gui, Add, Text, x120 y110 w30  h20, Alt+M
 
-Gui, Add, Text, x10  y110 w110 h20, Quick concrete:
-Gui, Add, Text, x120 y110 w30  h20, Alt+C
+Gui, Add, Text, x10  y130 w110 h20, Quick concrete:
+Gui, Add, Text, x120 y130 w30  h20, Alt+C
 
 ; Jump flying with an elytra and rocket
-Gui, Add, Text, x10  y130 w110 h20, Elytra take off:
-Gui, Add, Text, x120 y130 w80  h20, Alt+Space
+Gui, Add, Text, x10  y150 w110 h20, Elytra take off:
+Gui, Add, Text, x120 y150 w80  h20, Alt+Space
 ; Holding MButton and L/RButton spamclicks L/Rbutton
-Gui, Add, Checkbox, x10  y150 w110 h20 vMiddleSpam, Autoclick
-Gui, Add, Text,     x120 y150 w100 h20, Middle+L/R mouse
-Gui, Add, Slider,   x220 y150 w60  h20 vSpamInterval Range100-1000 TickInterval225 ToolTip
+Gui, Add, Checkbox, x10  y170 w110 h20 vMiddleSpam, Autoclick
+Gui, Add, Text,     x120 y170 w100 h20, Middle+L/R mouse
+Gui, Add, Slider,   x220 y170 w60  h20 vSpamInterval Range100-1000 TickInterval225 ToolTip
 ;Gui, Add, Text,     x280 y150, ms
 ; Current action (only applies to the first 4)
 Gui, Add, Text, x10  y200 w90 h20, Current action:
@@ -51,6 +57,29 @@ Gui, Show, h270 w320, Minecraft hotkeys %version%
 Return
 GuiClose:
 ExitApp
+
+SetWeapon:
+	for slot in [1,2,3,4,5,6,7,8,9]
+		GuiControl, Enable, SwapSlot%slot%
+	newWeaponSlot:=SubStr(A_GuiControl, 0)
+	Gui, Submit, NoHide
+	GuiControl, Disable, SwapSlot%newWeaponSlot%
+return
+
+SwapToggle:
+	Gui, Submit, NoHide
+	if (DoSwapping<>0){
+		for slot in [1,2,3,4,5,6,7,8,9]
+			GuiControl, Enable, SwapSlot%slot%
+		for slot in [1,2,3,4,5,6,7,8,9]
+			GuiControl, Enable, WeaponSlot%slot%
+	} else {
+		for slot in [1,2,3,4,5,6,7,8,9]
+			GuiControl, Disable, SwapSlot%slot%
+		for slot in [1,2,3,4,5,6,7,8,9]
+			GuiControl, Disable, WeaponSlot%slot%
+	}
+return
 
 stopCurrent:=False
 isDoigngSomething:=False
@@ -97,21 +126,44 @@ Return
 	!G::
 		GuiControl, , CurrentAction, Grinding
 		Suspend, On
+		Gui, Submit, NoHide
 		isDoingSomething:=True
+		weaponSlot=:-1
+		for slot in [1,2,3,4,5,6,7,8,9]
+			if (weaponSlot%slot%){
+				weaponSlot:=slot
+			}
 		GMainLoop:
 		while (stopCurrent<>True){
-			ControlClick, , ahk_pid %WindowPID%, , Left, , NA
-			Sleep, 50
-			; Fun fact: It took like 20 minutes to figure out that I forgot the second comma before the NAD/NAU
-			ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
-			Loop 10 {
-				Sleep, 162
-				if (stopCurrent=True){
-					 ; This is the jankest solution I've ever written, but it lets you stop the key mid-eating
-					break, GMainLoop
+			if (DoSwapping && weaponSlot<>-1){
+				SetKeyDelay, 100, 100
+				for slot in [1,2,3,4,5,6,7,8,9]
+					if (SwapSlot%slot%){
+						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%]
+						Loop 10 {
+							Sleep, 162
+							if (stopCurrent=True){
+								ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%]
+								break, GMainLoop
+							}
+						}
+						ControlClick, , ahk_pid %WindowPID%, , Left, , NA
+						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
+					}
+			} else {
+				ControlClick, , ahk_pid %WindowPID%, , Left, , NA
+				Sleep, 50
+				; Fun fact: It took like 20 minutes to figure out that I forgot the second comma before the NAD/NAU
+				ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
+				Loop 10 {
+					Sleep, 162
+					if (stopCurrent=True){
+						 ; This is the jankest solution I've ever written, but it lets you stop the key mid-eating
+						break, GMainLoop
+					}
 				}
+				Sleep, 50
 			}
-			Sleep, 50
 		}
 		ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
 		stopCurrent:=False
