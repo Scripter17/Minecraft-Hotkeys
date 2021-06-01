@@ -16,6 +16,7 @@ Gui, Add, Text, x10  y30 w110 h20, AFK Mob Grinding:
 Gui, Add, Text, x120 y30 w30  h20, Alt+G
 
 Gui, Add, Checkbox, x10 y50 vDoSwapping gSwapToggle, Swap?
+; I have to do 3 separate passes to make the checkboxes and radio buttons not break
 For slot in [1,2,3,4,5,6,7,8,9]
 	Gui, Add, Text, % "x" . (slot*25+43) .  " y50", % slot
 Gui, Add, Text, x10 y70, Slots
@@ -70,7 +71,7 @@ return
 
 SwapToggle:
 	Gui, Submit, NoHide
-	if (DoSwapping<>0){
+	if (DoSwapping){
 		for slot in [1,2,3,4,5,6,7,8,9]
 			GuiControl, Enable, SwapSlot%slot%
 		for slot in [1,2,3,4,5,6,7,8,9]
@@ -136,16 +137,16 @@ Return
 				weaponSlot:=slot
 			}
 		GMainLoop:
-		while (stopCurrent<>True){
+		while (!stopCurrent){
 			if (DoSwapping && weaponSlot<>-1){
-				SetKeyDelay, 100, 100
+				SetKeyDelay, 50, 10
 				for slot in [1,2,3,4,5,6,7,8,9]
 					if (SwapSlot%slot% && slot<>weaponSlot){
-						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%]
+						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
 						Loop 10 {
 							Sleep, 162
-							if (stopCurrent=True){
-								ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%]
+							if (stopCurrent){
+								ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
 								break, GMainLoop
 							}
 						}
@@ -159,7 +160,7 @@ Return
 				ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
 				Loop 10 {
 					Sleep, 162
-					if (stopCurrent=True){
+					if (stopCurrent){
 						 ; This is the jankest solution I've ever written, but it lets you stop the key mid-eating
 						break, GMainLoop
 					}
