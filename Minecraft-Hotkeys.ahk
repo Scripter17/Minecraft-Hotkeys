@@ -1,5 +1,5 @@
 ; Minecraft-Hotkeys by Github@Scripter17
-; Version 0.4.1
+; Version 0.5.0-pre
 ; Original concept stolen from https://github.com/monpjc/XAHK
 #SingleInstance, force
 version:="v0.5.0-pre"
@@ -72,6 +72,7 @@ return
 SwapToggle:
 	Gui, Submit, NoHide
 	if (DoSwapping){
+		; No idea why I need to do 2 loops here
 		for slot in [1,2,3,4,5,6,7,8,9]
 			GuiControl, Enable, SwapSlot%slot%
 		for slot in [1,2,3,4,5,6,7,8,9]
@@ -115,7 +116,7 @@ Return
 		GuiControlGet, FishingInterval
 		Suspend, On ; Disable any hotkey that isn't marke with "Suspend, Permit"
 		isDoingSomething:=True
-		while (stopCurrent<>True){ ; TODO: Figure out why =False doesn't work but <>True does
+		while (!stopCurrent){ ; TODO: Figure out why =False doesn't work but <>True does
 			ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
 			Sleep, 100
 			ControlClick, , ahk_pid %WindowPID%, , Right, , NAU
@@ -131,37 +132,39 @@ Return
 		Suspend, On
 		Gui, Submit, NoHide
 		isDoingSomething:=True
-		weaponSlot=:-1
-		for slot in [1,2,3,4,5,6,7,8,9]
-			if (weaponSlot%slot%){
-				weaponSlot:=slot
-			}
+		weaponSlot:=-1
+		if (DoSwapping){
+			for slot in [1,2,3,4,5,6,7,8,9]
+				if (weaponSlot%slot%){
+					weaponSlot:=slot
+				}
+		}
+		WinGet, aaa, PID, ahk_pid %WindowPID%
 		GMainLoop:
 		while (!stopCurrent){
 			if (DoSwapping && weaponSlot<>-1){
 				SetKeyDelay, 50, 10
 				for slot in [1,2,3,4,5,6,7,8,9]
 					if (SwapSlot%slot% && slot<>weaponSlot){
-						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
+						ControlSend, , %slot%f%weaponSlot%
 						Loop 10 {
+							; This makes sure you can CTRL+C out of the script in a timely manner
 							Sleep, 162
 							if (stopCurrent){
-								ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
-								break, GMainLoop
+								;ControlSend, , %slot%f%weaponSlot%
+								break, GMainLoop ; Jank BS
 							}
 						}
-						ControlClick, , ahk_pid %WindowPID%, , Left, , NA
-						ControlSend, , %slot%f%weaponSlot%, ahk_pid %WindowPID%
+						;ControlClick, , ahk_pid %WindowPID%, , Left, , NA
+						ControlSend, , %slot%f%weaponSlot%
 					}
 			} else {
 				ControlClick, , ahk_pid %WindowPID%, , Left, , NA
 				Sleep, 50
-				; Fun fact: It took like 20 minutes to figure out that I forgot the second comma before the NAD/NAU
 				ControlClick, , ahk_pid %WindowPID%, , Right, , NAD
 				Loop 10 {
 					Sleep, 162
 					if (stopCurrent){
-						 ; This is the jankest solution I've ever written, but it lets you stop the key mid-eating
 						break, GMainLoop
 					}
 				}

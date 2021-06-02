@@ -15,7 +15,9 @@ The instructions should be fairly understandable from there
 
 - AFK fishing
 - AFK mob grinding
+  - Holds right to eat food by default
   - Lets you repair multiple mending items by setting slots to swap into your offhand
+    - Enabling swapSlots disables auto-eating food
 - AFK cobblestone generator mining
 - Quick concrete hardening
 - Easy elytra takeoff
