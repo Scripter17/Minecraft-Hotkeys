@@ -28,6 +28,7 @@ For slot in [1,2,3,4,5,6,7,8,9]
 
 Gui, Add, Text, x10  y110 w110 h20, AFK Cobblestone:
 Gui, Add, Text, x120 y110 w30  h20, Alt+M
+Gui, Add, Checkbox, x160 y110 vSkyblockMode gSubmit, Hotbar full of stone picks
 
 Gui, Add, Text, x10  y130 w110 h20, Quick concrete:
 Gui, Add, Text, x120 y130 w30  h20, Alt+C
@@ -67,6 +68,10 @@ SetWeapon:
 	newWeaponSlot:=SubStr(A_GuiControl, 0)
 	Gui, Submit, NoHide
 	GuiControl, Disable, SwapSlot%newWeaponSlot%
+return
+
+Submit: 
+	Gui, Submit, NoHide
 return
 
 SwapToggle:
@@ -182,8 +187,14 @@ Return
 		Suspend, On
 		isDoingSomething:=True
 		while (stopCurrent<>True){
+			Sleep, 1000
 			ControlClick, , ahk_pid %WindowPID%, , Left, , NAD
-			Sleep, 100
+			Sleep, 1000
+			ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
+			if (SkyblockMode){
+				Send, {WheelDown}
+			}
+			Sleep, 2000
 		}
 		ControlClick, , ahk_pid %WindowPID%, , Left, , NAU
 		stopCurrent:=False
@@ -251,3 +262,5 @@ Return
 	; Just trust me on this
 	ExitApp
 return
+
+; todo: look at https://www.autohotkey.com/boards/viewtopic.php?t=122278
